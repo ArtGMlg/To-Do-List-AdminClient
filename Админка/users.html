@@ -278,48 +278,48 @@
       for(i=0; i<users.length; i++){
         usersIds.push(users[i].id);
       };
-        $.ajax({
-          type: 'POST',
-          url: 'http://localhost:3000/groups/create',
-          crossDomain: true,
-          data: {
-            name: document.getElementById('groupName').value,
-            users: JSON.stringify(usersIds)
-          },
-          success: function(response) {
-            $('#groupCreate').modal('hide');
-          }
-        });
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/groups/create',
+        crossDomain: true,
+        data: {
+          name: document.getElementById('groupName').value,
+          users: JSON.stringify(usersIds)
+        },
+        success: function(response) {
+          $('#groupCreate').modal('hide');
+        }
+      });
     }
 
     $.ajax({
-    url: "http://localhost:3000/users/get",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (data) {
+      url: "http://localhost:3000/users/get",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (data) {
         drawUsersList(data);
-    }
-  });
+      }
+    });
 
     $.ajax({
-    url: "http://localhost:3000/groups/get",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (groups) {
+      url: "http://localhost:3000/groups/get",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (groups) {
         drawGroupList(groups);
-    }
-  });
+      }
+    });
   
-  function drawGroupList(groups){
-    var optionsWrapper = $('#groupsList')
-    for(i=0;i<groups.length;i++){
-      optionsWrapper.append('<option>'+groups[i].name+'</option>');
+    function drawGroupList(groups){
+      var optionsWrapper = $('#groupsList')
+      for(i=0;i<groups.length;i++){
+        optionsWrapper.append('<option>'+groups[i].name+'</option>');
+      };
     };
-  };
 
     function addToGroup(){
       var usersIds= [];
@@ -327,19 +327,18 @@
       for(i=0; i<users.length; i++){
         usersIds.push(users[i].id);
       };
-
-        $.ajax({
-          type: 'POST',
-          url: 'http://localhost:3000/groups/addUsersToGroup',
-          crossDomain: true,
-          data: {
-            name: document.getElementById('groupName').value,
-            users: JSON.stringify(usersIds)
-          },
-          success: function(response) {
-            
-          }
-        });
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/groups/addUsersToGroup',
+        crossDomain: true,
+        data: {
+          name: document.getElementById('groupName').value,
+          users: JSON.stringify(usersIds)
+        },
+        success: function(response) {
+          
+        }
+      });
     }
 
     function drawUsersList (data) {
@@ -393,17 +392,17 @@
     usersIds.push(users[i].id);
     };
     $.ajax({
-          type: 'POST',
-          url: 'http://localhost:3000/groups/update',
-          crossDomain: true,
-          data: {
-            name: group,
-            users: JSON.stringify(usersIds)
-          },
-          success: function(response) {
-            $('#addToGroupModal').modal('hide');
-          }
-        });
+      type: 'POST',
+      url: 'http://localhost:3000/groups/update',
+      crossDomain: true,
+      data: {
+        name: group,
+        users: JSON.stringify(usersIds)
+      },
+      success: function(response) {
+        $('#addToGroupModal').modal('hide');
+      }
+    });
   };
   
   </script>

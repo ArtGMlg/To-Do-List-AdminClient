@@ -18,11 +18,11 @@
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.css" rel="stylesheet">
 
-   <script>
-      if (localStorage.getItem('admIsLogIn')){
-     window.location = "groups.html";
-  }
-    </script>
+  <script>
+    if (localStorage.getItem('admIsLogIn')){
+      window.location.replace('groups.html');
+    }
+  </script>
 
 </head>
 
@@ -52,7 +52,7 @@
                     <div class="form-group">
                       <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Пароль">
                     </div>
-                    <div id="errorMessage" style="color: #f80000;"></div>
+                    <div class="text-danger text-center" style="height: 0px" id="errorMessage"></div>
                     <div class="form-group">
                    <!--   <div class="custom-control custom-checkbox small">
                         <input type="checkbox" class="custom-control-input" id="customCheck">
@@ -107,10 +107,18 @@
 	    }
     });
 
-    $('.form-control').focus(function(){
-      $('.form-control').css('border-color', '');
-      $('#errorMessage').text('');
-    });
+    $('document').ready(function(){
+      $('.form-control').focus(function(){
+        if ($('#errorMessage').text().length > 0) {
+          $('.form-control').css('border-color', '');
+          $('#errorMessage').animate({
+            height: 0
+          }, 300, 'linear', function(){
+            $('#errorMessage').text('');
+          })
+        }
+      });
+    })
 
     function auth(){
       var adminUser = {
@@ -138,6 +146,9 @@
           $('#exampleInputEmail').css('border-color', '#f80000');
           $('#exampleInputPassword').css('border-color', '#f80000');
           $('#errorMessage').text('Неверное имя пользователя или пароль!');
+          $('#errorMessage').animate({
+            height: '24px'
+          }, 300, 'linear')
         }
       });
     }
