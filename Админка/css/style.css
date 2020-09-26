@@ -77,6 +77,26 @@
   animation-timing-function: transform cubic-bezier(.18,1.25,.4,1),opacity cubic-bezier(0,1,.4,1);
 }
 
+#loadingAnim{
+  background-color: rgb(230 230 230 / .5);
+  z-index: 81;
+  height: 125px;
+  width: 125px;
+  top: calc(50vh - 62.5px);
+  left: calc(50vw - 62.5px);
+  border-radius: 15px;
+  backdrop-filter: blur(3px);
+}
+
+.dropdown-menu{
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dropdown-menu a{
+  cursor: pointer;
+}
+
 @media all and (max-width: 650px){
   .input-daterange{
     width: 100%;
@@ -86,10 +106,6 @@
     display: block;
     float: none!important;
     margin: 0px 0px 10px 0px!important;
-  }
-  .h3{
-    text-align: center;
-    margin-right: 10px;
   }
   .btns-container{
     display: flex;
@@ -133,10 +149,16 @@
   .toggle-blur{
     filter: blur(2px) grayscale(0.9);
     pointer-events: none;
+    user-select: none;
   }
 
   .sidebar-brand{
     margin-top: 45px;
+  }
+  
+  .h3{
+    text-align: center;
+    margin-right: 10px;
   }
 
   body:not([class="sidebar-toggled"]){

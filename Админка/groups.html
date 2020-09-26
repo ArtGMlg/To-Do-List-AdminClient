@@ -139,6 +139,10 @@
             </div>
           </div>
 
+          <div id="loadingAnim" class="position-fixed align-items-center justify-content-center" style="display: flex;">
+            <img src="./img/preloader.webp">
+          </div>
+
           <div class="card shadow mb-4">
             <div class="card-body">
               <div class="table-responsive">
@@ -162,6 +166,7 @@
               </div>
             </div>
           </div>
+
         </div>
         <!-- /.container-fluid -->
 
@@ -227,117 +232,119 @@
   <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 
   <script type="text/javascript">
-  $.ajax({
-    url: "http://localhost:3000/groups/get",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (groups) {
-        drawGroupList(groups);
+    window.onload = function () {
+      $('#loadingAnim').fadeOut();
     }
-  });
 
-  function drawGroupList(groups) {
-    var groupedUsersList = $('#groupedUsersList');
-    for(i = 0; i < groups.length; i++){
-      groupedUsersList.append(
-        '<tr>'+
-          '<td>'+
-              '<div class="custom-control custom-checkbox small">'+
-                  '<input type="checkbox" class="custom-control-input group-checkbox" onclick="checkGroup(this)" id="'+groups[i].name+'">'+
-                  '<label class="custom-control-label" for="'+groups[i].name+'"></label>'+
-              '</div>'+
-          '</td>' +
-          '<td><a href="./groupControlCenter.html?name='+groups[i].name+'">'+groups[i].name+'</a></td>'+
-          '<td>'+JSON.parse(groups[i].users).length+'</td>'+
-        '</tr>'
-      )
-    }
-    $('#dataTable').DataTable({
-      "language": {
-        "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/Russian.json"
+    $.ajax({
+      url: "http://localhost:3000/groups/get",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (groups) {
+        drawGroupList(groups);
       }
     });
-  }
 
-  function removeGroups() {
-    var groupNames =[];
-    var groups = $(".group-checkbox:checked");
-    for (i=0; i<groups.length; i++){
-      groupNames.push(groups[i].id);
-    };
-    $.ajax({
-          type: 'POST',
-          url: 'http://localhost:3000/groups/remove',
-          crossDomain: true,
-          data: {
-            groupNames: JSON.stringify(groupNames)
-          },
-          success: function(response) {
-            location.reload();
-          }
-        });
-  };
-
-  function addToDoItem(){
-    var groupNames =[];
-    var groups = $(".group-checkbox:checked");
-    for (i=0; i<groups.length; i++){
-      groupNames.push(groups[i].id);
-    };
-    if (!document.getElementById('to-do-tittle').value){
-      alert('Введите заголовок!');
-      return;
-    }
-    else if (!document.getElementById('to-do-points').value) {
-      alert('Введите количество баллов');
-      return;
-    }
-    toDoItem = {
-      title: document.getElementById('to-do-tittle').value,
-      description: document.getElementById('to-do-description').value,
-      timeHours: document.getElementById('to-do-time-hours').value,
-      timeMinutes: document.getElementById('to-do-time-minutes').value,
-      points: document.getElementById('to-do-points').value,
-      date: document.getElementById('to-do-date').value,
-      status: "incomplite",
-      admin: admItem
-    }
-
-    $.ajax({
-      type: 'POST',
-      url: 'http://localhost:3000/groups/addToDoItems',
-      crossDomain: true,
-      data: toDoItem,
-      success: function(response) {
-
+    function drawGroupList(groups) {
+      var groupedUsersList = $('#groupedUsersList');
+      for(i = 0; i < groups.length; i++){
+        groupedUsersList.append(
+          '<tr>'+
+            '<td>'+
+                '<div class="custom-control custom-checkbox small">'+
+                    '<input type="checkbox" class="custom-control-input group-checkbox" onclick="checkGroup(this)" id="'+groups[i].name+'">'+
+                    '<label class="custom-control-label" for="'+groups[i].name+'"></label>'+
+                '</div>'+
+            '</td>' +
+            '<td><a href="./groupControlCenter.html?name='+groups[i].name+'">'+groups[i].name+'</a></td>'+
+            '<td>'+JSON.parse(groups[i].users).length+'</td>'+
+          '</tr>'
+        )
       }
-  });
-}
+      $('#dataTable').DataTable({
+        "language": {
+          "url": "https://cdn.datatables.net/plug-ins/1.10.21/i18n/Russian.json"
+        }
+      });
+    }
+
+    function removeGroups() {
+      var groupNames =[];
+      var groups = $(".group-checkbox:checked");
+      for (i=0; i<groups.length; i++){
+        groupNames.push(groups[i].id);
+      };
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/groups/remove',
+        crossDomain: true,
+        data: {
+          groupNames: JSON.stringify(groupNames)
+        },
+        success: function(response) {
+          location.reload();
+        }
+      });
+    };
+
+    function addToDoItem(){
+      var groupNames =[];
+      var groups = $(".group-checkbox:checked");
+      for (i=0; i<groups.length; i++){
+        groupNames.push(groups[i].id);
+      };
+      if (!document.getElementById('to-do-tittle').value){
+        alert('Введите заголовок!');
+        return;
+      }
+      else if (!document.getElementById('to-do-points').value) {
+        alert('Введите количество баллов');
+        return;
+      }
+      toDoItem = {
+        title: document.getElementById('to-do-tittle').value,
+        description: document.getElementById('to-do-description').value,
+        timeHours: document.getElementById('to-do-time-hours').value,
+        timeMinutes: document.getElementById('to-do-time-minutes').value,
+        points: document.getElementById('to-do-points').value,
+        date: document.getElementById('to-do-date').value,
+        status: "incomplite",
+        admin: admItem
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/groups/addToDoItems',
+        crossDomain: true,
+        data: toDoItem,
+        success: function(response) {}
+      });
+    }
+
     function logout() {
       localStorage.removeItem('admIsLogIn');
       localStorage.removeItem('admUser');
     };
-  
-  function checkAllGroups(cb){
-    var checked = $(".group-checkbox");
-    for(i=0; i < checked.length; i++){
-      checked[i].checked = cb.checked;
-    };
-  };
-  
-  function checkGroup(cb){
-    var checked = $(".group-checkbox");
-    var markAllChecked = true;
-    for (i=0; i < checked.length; i++){
-      if (checked[i].checked === false || $('input.form-control-sm').val().length !== 0){
-        markAllChecked = false;
+    
+    function checkAllGroups(cb){
+      var checked = $(".group-checkbox");
+      for(i=0; i < checked.length; i++){
+        checked[i].checked = cb.checked;
       };
     };
-    document.getElementById('checkAll').checked = markAllChecked;
     
-  }
+    function checkGroup(cb){
+      var checked = $(".group-checkbox");
+      var markAllChecked = true;
+      for (i=0; i < checked.length; i++){
+        if (checked[i].checked === false || $('input.form-control-sm').val().length !== 0){
+          markAllChecked = false;
+        };
+      };
+      document.getElementById('checkAll').checked = markAllChecked;
+    }
   
   </script>
 

@@ -145,6 +145,10 @@
         </div>
     
         <!-- /.container-fluid -->
+
+        <div id="loadingAnim" class="position-fixed align-items-center justify-content-center" style="display: flex;">
+          <img src="./img/preloader.webp">
+        </div>
     
     
         <div class="row">
@@ -158,7 +162,7 @@
                     Все группы
                   </button>
                   <div class="dropdown-menu animated--fade-in" id="dropdown" aria-labelledby="dropdownMenuButton" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, -104px, 0px);">
-                    <a class="dropdown-item" href="#" onclick = "changeGroup()">Все группы</a>
+                    <a class="dropdown-item" onclick = "changeGroup()">Все группы</a>
                   </div>
                 </div>
               </div>
@@ -253,158 +257,163 @@
   <script src="vendor/chart.js/Chart.js"></script>
 
   <!-- Page level custom scripts-->
-  <script src="js/demo/chart-area-demo.js"></script>
   <script src="js/demo/chart-pie-demo.js"></script> 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ru.min.js"></script>
 
   <script type="text/javascript">
-  $('.input-group.input-daterange').datepicker({
-    language: "ru",
-    orientation: "bottom auto",
-    format: "yyyy-mm-dd",
-    todayHighlight: true,
-    disableTouchKeyboard: true,
-    clearBtn: true
-  });
+    $('.input-group.input-daterange').datepicker({
+      language: "ru",
+      orientation: "bottom auto",
+      format: "yyyy-mm-dd",
+      todayHighlight: true,
+      disableTouchKeyboard: true,
+      clearBtn: true
+    });
 
-  $('.input-daterange input').each(function() {
-    $(this).datepicker('clearDates');
-  });
-  
-  $.ajax({
-    url: "http://localhost:3000/groups/getTop",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (data) {
-      drawTopList(data);
-    }
-  });
+    $('.input-daterange input').each(function() {
+      $(this).datepicker('clearDates');
+    });
 
-  function drawTopList(data) {
-    for (var i = 0; i < 9; i++) {
-      $('#top').append('<li>' + data[i].name + " &mdash; " + pluralize(data[i].score, ['балл', 'балла', 'баллов']));
+    window.onload = function () {
+      $('#loadingAnim').fadeOut();
+      pageLoaded = true;
     }
-  };
-  
-  function statFilter() {
-    var to = document.getElementById('toInput').value;
-    var from = document.getElementById('fromInput').value;
-    var groupName = document.getElementById('dropdownMenuButton').value;
-    if(groupName === 'Все группы'){
-      updateChart(from, to)
-    } else{
-      updateChart(from, to, groupName)
-    }   
     
-  }
-  
-  var allGroups = [];
-  var allTasks = [];
-  $.ajax({
-    url: "http://localhost:3000/groups/get",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (groups) {
-    allGroups = groups;
+    $.ajax({
+      url: "http://localhost:3000/groups/getTop",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (data) {
+        drawTopList(data);
+      }
+    });
+
+    function drawTopList(data) {
+      for (var i = 0; i < 9; i++) {
+        $('#top').append('<li>' + data[i].name + " &mdash; " + pluralize(data[i].score, ['балл', 'балла', 'баллов']));
+      }
+    };
+    
+    function statFilter() {
+      var to = document.getElementById('toInput').value;
+      var from = document.getElementById('fromInput').value;
+      var groupName = document.getElementById('dropdownMenuButton').value;
+      if(groupName === 'Все группы'){
+        updateChart(from, to)
+      } else{
+        updateChart(from, to, groupName)
+      }   
+      
+    }
+    
+    var allGroups = [];
+    var allTasks = [];
+    $.ajax({
+      url: "http://localhost:3000/groups/get",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (groups) {
+      allGroups = groups;
         drawGroupList(groups);
-    }
-  });
-  
-  $.ajax({
-    url: "http://localhost:3000/tasks/get",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (data) {
-    allTasks = data.tasks;
+      }
+    });
+    
+    $.ajax({
+      url: "http://localhost:3000/tasks/getAllTasks",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (data) {
+        allTasks = data.tasks;
         reciveInf(data.tasks);
-    }
-  });
-  
-  function drawGroupList(groups){
-    for(i=0; i<groups.length; i++){
-      $('#dropdown').append('<a class="dropdown-item" href="#" onclick = "changeGroup(\'' + groups[i].name + '\')">' + groups[i].name + '</a>');
-    }
-  };
-  function changeGroup(groupName){
-    var to = document.getElementById('toInput').value;
-    var from = document.getElementById('fromInput').value;
-    if (groupName){
-      $('#dropdownMenuButton').html(groupName);
-    } else {
-      $('#dropdownMenuButton').html('Все группы');
-    }
-    updateChart(from, to, groupName);
-  };
-  
-  function groupIncludesUser(user, groupUsers){
-    var flag = false;
-    for(var i=0;i<groupUsers.length; i++){
-      if(groupUsers[i]===user){
-        flag = true;
-      };
+      }
+    });
+    
+    function drawGroupList(groups){
+      for(i=0; i<groups.length; i++){
+        $('#dropdown').append('<a class="dropdown-item" onclick = "changeGroup(\'' + groups[i].name + '\')">' + groups[i].name + '</a>');
+      }
     };
-    return flag;
-  };
-  
-  function updateChart(from, to, groupName){
-    if (!groupName ){
-      var rangedTasks = filterByDates(allTasks, from, to);
-      reciveInf(rangedTasks);
-      return;
-    }
-    var groupUsers = [];
-    var neededTasks = [];
-    for(j=0; j<allGroups.length;j++){
-      if(allGroups[j].name === groupName){
-        groupUsers = allGroups[j].users;
-      };
+    function changeGroup(groupName){
+      $('#loadingAnim').css('display', 'flex');
+      var to = $('#toInput').val();
+      var from = $('#fromInput').val();
+      if (groupName){
+        $('#dropdownMenuButton').html(groupName);
+      } else {
+        $('#dropdownMenuButton').html('Все группы');
+      }
+      updateChart(from, to, groupName);
     };
-    for(i=0;i<allTasks.length;i++){
-      if( groupIncludesUser(allTasks[i].userId, JSON.parse(groupUsers)) === true) {
-        neededTasks.push(allTasks[i]);
+    
+    function groupIncludesUser(user, groupUsers){
+      var flag = false;
+      for(var i=0;i<groupUsers.length; i++){
+        if(groupUsers[i]===user){
+          flag = true;
+        };
       };
+      return flag;
     };
-    var rangedTasks = filterByDates(neededTasks, from, to);
+    
+    function updateChart(from, to, groupName){
+      if (!groupName ){
+        var rangedTasks = filterByDates(allTasks, from, to);
         reciveInf(rangedTasks);
-  };
-  
-  function filterByDates(tasks, from, to){
-    var rangedTasks = [];
-    var date = from;
-    if (date) {
-      date = new Date(date);
-    } else {
-      date = new Date('2000-01-01');
-    }
-    date = date.getTime();
-    var date1 = to;
-    if (date1) {
-      date1 = new Date(date1);
-    } else {
-      date1 = new Date();
-    }
-    date1 = date1.getTime();
-    for(i=0; i < tasks.length ; i++){
-      taskDate = new Date(tasks[i].date)
-      taskDate = taskDate.getTime();
-      if(taskDate >=  date && taskDate <= date1){
-        rangedTasks.push(tasks[i]);
+        return;
+      }
+      var groupUsers = [];
+      var neededTasks = [];
+      for(j=0; j<allGroups.length;j++){
+        if(allGroups[j].name === groupName){
+          groupUsers = allGroups[j].users;
+        };
       };
+      for(i=0;i<allTasks.length;i++){
+        if( groupIncludesUser(allTasks[i].userId, JSON.parse(groupUsers)) === true) {
+          neededTasks.push(allTasks[i]);
+        };
+      };
+      var rangedTasks = filterByDates(neededTasks, from, to);
+        reciveInf(rangedTasks);
     };
-    return rangedTasks;
-  };
+    
+    function filterByDates(tasks, from, to){
+      var rangedTasks = [];
+      var date = from;
+      if (date) {
+        date = new Date(date);
+      } else {
+        date = new Date('2000-01-01');
+      }
+      date = date.getTime();
+      var date1 = to;
+      if (date1) {
+        date1 = new Date(date1);
+      } else {
+        date1 = new Date();
+      }
+      date1 = date1.getTime();
+      for(i=0; i < tasks.length ; i++){
+        taskDate = new Date(tasks[i].date)
+        taskDate = taskDate.getTime();
+        if(taskDate >=  date && taskDate <= date1){
+          rangedTasks.push(tasks[i]);
+        };
+      };
+      return rangedTasks;
+    };
 
     function pluralize(count, words) {
       var cases = [2, 0, 1, 1, 1, 2];
       return count + ' ' + words[ (count % 100 > 4 && count % 100 < 20) ? 2 : cases[ Math.min(count % 10, 5)] ];
-  };
+    };
   
     function logout() {
       localStorage.removeItem('admIsLogIn');

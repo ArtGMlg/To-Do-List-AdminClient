@@ -135,6 +135,10 @@
       
         </div>
         <!-- /.container-fluid -->
+
+        <div id="loadingAnim" class="position-fixed align-items-center justify-content-center" style="display: flex;">
+          <img src="./img/preloader.webp">
+        </div>
     
         <div class="row">
           <div class="col-xl-4 col-lg-5" id="chart">
@@ -147,7 +151,7 @@
                     Все пользователи
                   </button>
                   <div class="dropdown-menu animated--fade-in" id="dropdown" aria-labelledby="dropdownMenuButton" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, -104px, 0px);">
-                    <a class="dropdown-item" href="#" onclick = "changeUser()">Все</a>
+                    <a class="dropdown-item" onclick = "changeUser()">Все</a>
                   </div>
                 </div>
               </div>
@@ -242,147 +246,152 @@
   <script src="vendor/chart.js/Chart.js"></script>
 
   <!-- Page level custom scripts-->
-  <script src="js/demo/chart-area-demo.js"></script>
   <script src="js/demo/chart-pie-demo.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ru.min.js"></script>
 
   <script type="text/javascript">
-  $('.input-group.input-daterange').datepicker({
-    language: "ru",
-    orientation: "bottom auto",
-    format: "yyyy-mm-dd",
-    todayHighlight: true,
-    disableTouchKeyboard: true,
-    clearBtn: true
-  });
+    $('.input-group.input-daterange').datepicker({
+      language: "ru",
+      orientation: "bottom auto",
+      format: "yyyy-mm-dd",
+      todayHighlight: true,
+      disableTouchKeyboard: true,
+      clearBtn: true
+    });
 
-  $('.input-daterange input').each(function() {
-    $(this).datepicker('clearDates');
-  });
-  
-  function statFilter() {
-    var to = document.getElementById('toInput').value;
-    var from = document.getElementById('fromInput').value;
-    var userEmail = activeUserEmail;
+    $('.input-daterange input').each(function() {
+      $(this).datepicker('clearDates');
+    });
     
-    var user = {};
-    for (i = 0; i < allUsers.length; i++) {
-      if (userEmail === allUsers[i].email) {
-        user = allUsers[i];
-        break;
+    window.onload = function () {
+      pageLoaded = true;
+      $('#loadingAnim').fadeOut();
+    }
+  
+    function statFilter() {
+      var to = document.getElementById('toInput').value;
+      var from = document.getElementById('fromInput').value;
+      var userEmail = activeUserEmail;
+      
+      var user = {};
+      for (i = 0; i < allUsers.length; i++) {
+        if (userEmail === allUsers[i].email) {
+          user = allUsers[i];
+          break;
+        }
       }
+      var userName = document.getElementById('dropdownMenuButton').value;
+      if(!activeUserEmail){
+        updateChart(from, to)
+      } else{
+        updateChart(from, to, user)
+      }   
+      
     }
-    var userName = document.getElementById('dropdownMenuButton').value;
-    if(!activeUserEmail){
-      updateChart(from, to)
-    } else{
-      updateChart(from, to, user)
-    }   
+    var allUsers = [];
+    var allTasks = [];
+    var activeUserEmail;
+    $.ajax({
+      url: "http://localhost:3000/users/get",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (data) {
+      allUsers = data;
+        drawUsersList(data);
+      }
+    });
     
-  }
-  var allUsers = [];
-  var allTasks = [];
-  var activeUserEmail;
-  $.ajax({
-    url: "http://localhost:3000/users/get",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (data) {
-    allUsers = data;
-      drawUsersList(data);
-    }
-  });
-  
-  $.ajax({
-    url: "http://localhost:3000/users/getTop",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (data) {
-      drawTopList(data);
-    }
-  });
-  
-  $.ajax({
-    url: "http://localhost:3000/tasks/get",
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    contentType: 'application/json; charset=utf-8',
-    success: function (data) {
-    allTasks = data.tasks;
+    $.ajax({
+      url: "http://localhost:3000/users/getTop",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (data) {
+        drawTopList(data);
+      }
+    });
+    
+    $.ajax({
+      url: "http://localhost:3000/tasks/getAllTasks",
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      contentType: 'application/json; charset=utf-8',
+      success: function (data) {
+        allTasks = data.tasks;
         reciveInf(data.tasks);
-    }
-  });
-  
-  function drawUsersList(users){
-    for(i=0; i<users.length; i++){
-      $('#dropdown').append('<a class="dropdown-item" href="#" onclick = "changeUser(\'' + users[i].email + '\')">' + users[i].lastName + " " + users[i].firstName[0] + "." + users[i].surName[0]+ "." + '</a>');
-    }
-  };
-
-  function drawTopList(data) {
-    for (var i = 0; i < 9; i++) {
-      $('#top').append('<li>' + data[i].lastName + " " + data[i].firstName[0] + "." + data[i].surName[0]+ ". &mdash; " +pluralize(data[i].score, ['балл', 'балла', 'баллов']));
-    }
-  };
-  
-  function changeUser(userEmail){
-    var to = document.getElementById('toInput').value;
-    var from = document.getElementById('fromInput').value;
-    activeUserEmail = userEmail;
-    if(! userEmail){
-      $('#dropdownMenuButton').html("Все пользователи");
-      updateChart(from, to);
-      return
-    };
-    var user = {};
-    for (i = 0; i < allUsers.length; i++) {
-      if (userEmail === allUsers[i].email) {
-        user = allUsers[i];
-        break;
       }
-    }
-    $('#dropdownMenuButton').html(user.lastName + " " + user.firstName[0] + "." + user.surName[0]+ ".");
-    updateChart(from, to, user);
-  };
-  
-  function groupIncludesUser(user, groupUsers){
-    var flag = false;
-    for(var i=0;i<groupUsers.length; i++){
-      if(groupUsers[i]===user){
-        flag = true;
-      };
-    };
-    return flag;
-  };
-  
-  function updateChart(from, to, user){
-    if (!user ){ 
-      var rangedTasks = filterByDates(allTasks, from, to);
-      reciveInf(rangedTasks);
-      return;
-    }
+    });
     
-    
-    var usersTasks = [];
-    for(j=0; j<allTasks.length;j++){
-      if(allTasks[j].userId === user.email){
-        usersTasks.push(allTasks[j]);
-      };
+    function drawUsersList(users){
+      for(i=0; i<users.length; i++){
+        $('#dropdown').append('<a class="dropdown-item" onclick = "changeUser(\'' + users[i].email + '\')">' + users[i].lastName + " " + users[i].firstName[0] + "." + users[i].surName[0]+ "." + '</a>');
+      }
     };
-    //for(i=0;i<allTasks.length;i++){
-    //  if( groupIncludesUser(allTasks[i].userId, JSON.parse(groupUsers)) === true) {
-    //    neededTasks.push(allTasks[i]);
-    //  };
-    //};
-    var rangedTasks = filterByDates(usersTasks, from, to);
+
+    function drawTopList(data) {
+      for (var i = 0; i < 9; i++) {
+        $('#top').append('<li>' + data[i].lastName + " " + data[i].firstName[0] + "." + data[i].surName[0]+ ". &mdash; " +pluralize(data[i].score, ['балл', 'балла', 'баллов']));
+      }
+    };
+    
+    function changeUser(userEmail){
+      $('#loadingAnim').css('display', 'flex');
+      var to = document.getElementById('toInput').value;
+      var from = document.getElementById('fromInput').value;
+      activeUserEmail = userEmail;
+      if(! userEmail){
+        $('#dropdownMenuButton').html("Все пользователи");
+        updateChart(from, to);
+        return
+      };
+      var user = {};
+      for (i = 0; i < allUsers.length; i++) {
+        if (userEmail === allUsers[i].email) {
+          user = allUsers[i];
+          break;
+        }
+      }
+      $('#dropdownMenuButton').html(user.lastName + " " + user.firstName[0] + "." + user.surName[0]+ ".");
+      updateChart(from, to, user);
+    };
+    
+    function groupIncludesUser(user, groupUsers){
+      var flag = false;
+      for(var i=0;i<groupUsers.length; i++){
+        if(groupUsers[i]===user){
+          flag = true;
+        };
+      };
+      return flag;
+    };
+    
+    function updateChart(from, to, user){
+      if (!user ){ 
+        var rangedTasks = filterByDates(allTasks, from, to);
         reciveInf(rangedTasks);
-  };
+        return;
+      }
+      
+      
+      var usersTasks = [];
+      for(j=0; j<allTasks.length;j++){
+        if(allTasks[j].userId === user.email){
+          usersTasks.push(allTasks[j]);
+        };
+      };
+      //for(i=0;i<allTasks.length;i++){
+      //  if( groupIncludesUser(allTasks[i].userId, JSON.parse(groupUsers)) === true) {
+      //    neededTasks.push(allTasks[i]);
+      //  };
+      //};
+      var rangedTasks = filterByDates(usersTasks, from, to);
+      reciveInf(rangedTasks);
+    };
     function filterByDates(tasks, from, to){
       var rangedTasks = [];
       var date = from;

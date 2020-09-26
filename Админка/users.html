@@ -134,6 +134,10 @@
             </div>
           </div>
 
+          <div id="loadingAnim" class="position-fixed align-items-center justify-content-center" style="display: flex;">
+            <img src="./img/preloader.webp">
+          </div>
+
           <div class="card shadow mb-4">
             <div class="card-body">
               <div class="table-responsive">
@@ -267,6 +271,10 @@
   <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 
   <script type="text/javascript">
+    window.onload = function () {
+      $('#loadingAnim').fadeOut();
+    };
+
     function logout() {
       localStorage.removeItem('admIsLogIn');
       localStorage.removeItem('admUser');
@@ -366,45 +374,44 @@
       });
     }
 
-  function checkAllUsers(cb){
-    var checked = $(".user-checkbox");
-    for(i=0; i < checked.length; i++){
-      checked[i].checked = cb.checked;
-    };
-  };
-  
-  function checkUser(cb){
-    var checked = $(".user-checkbox");
-    var markAllChecked = true;
-    for (i=0; i < checked.length; i++){
-      if (checked[i].checked === false || $('input.form-control-sm').val().length !== 0){
-        markAllChecked = false;
+    function checkAllUsers(cb){
+      var checked = $(".user-checkbox");
+      for(i=0; i < checked.length; i++){
+        checked[i].checked = cb.checked;
       };
     };
-    document.getElementById('checkAll').checked = markAllChecked;
-  };
-  
-  function addToChousenGroup(){
-    var group = document.getElementById('groupsList').value;
-    var usersIds= [];
-    var users = $(".user-checkbox:checked");
-    for(i=0; i<users.length; i++){
-    usersIds.push(users[i].id);
+    
+    function checkUser(cb){
+      var checked = $(".user-checkbox");
+      var markAllChecked = true;
+      for (i=0; i < checked.length; i++){
+        if (checked[i].checked === false || $('input.form-control-sm').val().length !== 0){
+          markAllChecked = false;
+        };
+      };
+      document.getElementById('checkAll').checked = markAllChecked;
     };
-    $.ajax({
-      type: 'POST',
-      url: 'http://localhost:3000/groups/update',
-      crossDomain: true,
-      data: {
-        name: group,
-        users: JSON.stringify(usersIds)
-      },
-      success: function(response) {
-        $('#addToGroupModal').modal('hide');
-      }
-    });
-  };
-  
+    
+    function addToChousenGroup(){
+      var group = document.getElementById('groupsList').value;
+      var usersIds= [];
+      var users = $(".user-checkbox:checked");
+      for(i=0; i<users.length; i++){
+      usersIds.push(users[i].id);
+      };
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/groups/update',
+        crossDomain: true,
+        data: {
+          name: group,
+          users: JSON.stringify(usersIds)
+        },
+        success: function(response) {
+          $('#addToGroupModal').modal('hide');
+        }
+      });
+    };
   </script>
 
 </html>

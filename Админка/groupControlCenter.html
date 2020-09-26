@@ -125,6 +125,10 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
+          <div id="loadingAnim" class="position-fixed align-items-center justify-content-center" style="display: flex;">
+            <img src="./img/preloader.webp">
+          </div>
+
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800" id = "groupTitle"></h1>
@@ -366,6 +370,10 @@
   <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
   <script type="text/javascript">
+    window.onload = function () {
+      $('#loadingAnim').fadeOut();
+    }
+    
     var urlParams = new URLSearchParams(window.location.search);
     var name = urlParams.get('name');
     document.getElementById('groupTitle').innerText = name;
@@ -486,7 +494,7 @@
         points: document.getElementById('to-do-points').value,
         date: document.getElementById('to-do-date').value,
         "usersIds": usersIds.join(),
-        status: "incomplite",
+        status: "incomplete",
         admin: JSON.parse(localStorage.getItem('admUser')).email
       }
       $('#taskModal .modal-body form').css({'display': 'flex', 'justify-content': 'center'}).html('<img src="./img/load_new.webp">');

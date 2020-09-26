@@ -128,9 +128,14 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
+
+          <div id="loadingAnim" class="position-fixed align-items-center justify-content-center" style="display: flex;">
+            <img src="./img/preloader.webp">
+          </div>
  
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 id="userTitle" class="h3 mb-0 text-gray-800"></h1>
+          <div class="col-12 p-0 d-flex align-items-center justify-content-start mb-4">
+            <div class="col-1 col-md-auto pl-0" style="cursor: pointer;" onclick="window.history.back()"><i class="fas fa-arrow-left fa-2x text-gray-300" aria-hidden="true"></i></div>
+            <h1 id="userTitle" class="col-11 col-md-auto h3 mb-0 text-gray-800"></h1>
           </div>
           <div class="card shadow mb-4">
             <!-- Card Header - Accordion -->
@@ -271,6 +276,10 @@
   $('.input-daterange input').each(function() {
     $(this).datepicker('clearDates');
   });
+    
+  window.onload = function () {
+    $('#loadingAnim').fadeOut();
+  }
   
   var urlParams = new URLSearchParams(window.location.search);
   var email = urlParams.get('email');

@@ -1,4 +1,5 @@
 // Set new default font family and font color to mimic Bootstrap's default styling
+var pageLoaded = false;
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
 var ctx = document.getElementById("myPieChart");
@@ -37,9 +38,9 @@ function reciveInf(data) {
   var incomplite = 0;
   var admin = JSON.parse(localStorage.getItem('admUser')).email;
   for (i=0; i<data.length; i++) {
-    if (data[i].admin === admin && data[i].status === "incomplite") {
+    if (data[i].admin === admin && data[i].status === "incomplete") {
       incomplite = incomplite + 1;
-    } else if (data[i].admin === admin && data[i].status === "complite"){
+    } else if (data[i].admin === admin && data[i].status === "complete"){
       complite = complite + 1;
     };
   };
@@ -49,5 +50,9 @@ function reciveInf(data) {
 
 	myPieChart.data.datasets[0].data = [ complite, incomplite ];
 	myPieChart.update();
+
+	if ($('#loadingAnim').css('display') === 'flex' && pageLoaded === true) {
+		$('#loadingAnim').fadeOut()
+	}
 
 };
