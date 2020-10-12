@@ -11,6 +11,8 @@
 
   <title>Регистрация</title>
 
+  <link rel="shortcut icon" href="./img/atdl-ico.ico" type="image/x-icon">
+
   <!-- Custom fonts for this template-->
   <script src="https://kit.fontawesome.com/60c6536c6a.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -159,7 +161,7 @@
 
       $.ajax({
         type: 'POST',
-        url: 'http://localhost:3000/users/regAdmin',
+        url: encodeURI('https://k16-omsk.ru/server_for_tasks/users/regAdmin'),
         crossDomain: true,
         data: adminUser,
         success: function(response) {

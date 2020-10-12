@@ -1,5 +1,5 @@
 // Set new default font family and font color to mimic Bootstrap's default styling
-Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+/*Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
 
 function number_format(number, decimals, dec_point, thousands_sep) {
@@ -31,13 +31,13 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
 
 $.ajax({
-    url: "http://localhost:3000/tasks/getAllTasks",
+    url: encodeURI("https://k16-omsk.ru/server_for_tasks/tasks/getAllTasks"),
     type: 'GET',
     crossDomain: true,
     dataType: 'jsonp',
     contentType: 'application/json; charset=utf-8',
     success: function (data) {
-        DateInf(data);
+      DateInf(data);
     }
   });
 
@@ -190,4 +190,4 @@ var myLineChart = new Chart(ctx, {
 });
 myLineChart.data.datasets[0].data = [ Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec ];
 myLineChart.update();
-};
+};*/
